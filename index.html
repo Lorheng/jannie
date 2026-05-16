@@ -175,7 +175,7 @@
         <div id="intro-particles" class="absolute inset-0 pointer-events-none"></div>
 
         <div class="text-center mb-16 z-10 transition-opacity duration-500" id="intro-text">
-            <p class="text-sky-500 text-xs tracking-[0.3em] uppercase mb-3">May 16</p>
+            <p class="text-sky-500 text-xs tracking-[0.3em] uppercase mb-3">May 16, 2026</p>
             <h1 class="font-serif-elegant text-3xl text-slate-800">A special delivery</h1>
         </div>
 
@@ -205,7 +205,7 @@
     </div>
 
     <!-- Main Content -->
-    <div id="main-content" class="min-h-screen pb-6 hidden-initially relative z-30 hidden">
+    <div id="main-content" class="min-h-screen pb-32 hidden-initially relative z-30 hidden">
         
         <header class="pt-20 pb-10 px-6 max-w-lg mx-auto text-center relative z-10">
             <p class="text-sky-500 text-xs font-medium tracking-[0.2em] uppercase mb-4 reveal">Happy Birthday</p>
@@ -223,12 +223,13 @@
             <!-- Beautiful Visible Wish Message (Revealed by JS after Typewriter) -->
             <div id="normal-wish" class="mt-4 mb-2 flex flex-col items-center justify-center opacity-0 translate-y-4 transition-all duration-1000 ease-out">
                 <p class="text-slate-600 text-sm leading-relaxed max-w-sm mx-auto">
-                    Wishing you a year filled with endless joy, beautiful memories, and all the happiness you deserve. Have a wonderful day! 💙
+                    Wishing you a year filled with endless joy, beautiful memories, and all the happiness you deserve. Have a wonderful day!
                 </p>
             </div>
         </header>
 
-        <section class="px-4 max-w-2xl mx-auto relative z-10 -mb-24">
+        <!-- Slightly reduced negative margin to prevent eating into the footer -->
+        <section class="px-4 max-w-2xl mx-auto relative z-10 -mb-4">
             <!-- Split into two columns for Parallax logic -->
             <div class="flex gap-4 items-start">
                 
@@ -298,12 +299,19 @@
                             <img src="https://github.com/Lorheng/jannie/blob/main/Gemini_Generated_Image_ishjwnishjwnishj.png?raw=true" alt="Jannie" class="w-full h-auto object-cover opacity-0" onload="this.classList.remove('opacity-0')" loading="lazy">
                         </div>
                     </div>
+                    <!-- Moved Image -->
+                    <div class="img-card reveal cursor-pointer group" onclick="openLightbox('https://github.com/Lorheng/jannie/blob/main/IMG_6492.jpg?raw=true')">
+                        <div class="rounded-xl overflow-hidden shadow-sm bg-transparent relative">
+                            <div class="absolute inset-0 bg-sky-900/0 group-active:bg-sky-900/10 transition-colors z-10"></div>
+                            <img src="https://github.com/Lorheng/jannie/blob/main/IMG_6492.jpg?raw=true" alt="Jannie" class="w-full h-auto object-cover opacity-0" onload="this.classList.remove('opacity-0')" loading="lazy">
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- Reduced top margin to swallow parallax empty space -->
-        <div class="text-center mt-0 mb-8 px-6 flex flex-col items-center justify-center relative z-10">
+        <!-- Added pb-20 to ensure spacing above iOS Safari bottom bar -->
+        <div class="text-center mt-8 mb-8 px-6 flex flex-col items-center justify-center relative z-10 pb-20">
             
             <!-- The Scratch-Off Message Card -->
             <div class="mb-12 relative w-full max-w-[320px] mx-auto h-32 rounded-2xl shadow-sm border border-sky-100 flex items-center justify-center overflow-hidden bg-white reveal">
@@ -333,7 +341,7 @@
             </div>
 
             <!-- Sender Name -->
-            <p class="mt-8 text-slate-400 text-sm tracking-widest font-light reveal">by Ch...li</p>
+            <p class="mt-8 text-slate-400 text-sm tracking-widest font-light reveal">by Charlie</p>
         </div>
     </div>
 
@@ -608,34 +616,55 @@
                 }).catch(e => console.log("Audio autoplay prevented"));
             }
 
-            // --- Sound Effect Synthesis ---
+            // --- Sound Effect Synthesis (Paper Envelope Pop/Slide) ---
             function playUnsealSound() {
                 try {
                     const AudioContext = window.AudioContext || window.webkitAudioContext;
                     if (!AudioContext) return;
                     const audioCtx = new AudioContext();
                     
-                    // Resume audio context if suspended (fixes iOS Safari silence)
+                    // Resume audio context if suspended
                     if (audioCtx.state === 'suspended') {
                         audioCtx.resume();
                     }
                     
+                    // 1. Thud/Pop (Seal breaking)
                     const osc = audioCtx.createOscillator();
                     const gainNode = audioCtx.createGain();
-                    
-                    osc.type = 'triangle'; // Brighter, cleaner sound
-                    osc.frequency.setValueAtTime(500, audioCtx.currentTime);
-                    osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.15);
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 0.1);
                     
                     gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
-                    gainNode.gain.linearRampToValueAtTime(0.5, audioCtx.currentTime + 0.05); // Louder
-                    gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+                    gainNode.gain.linearRampToValueAtTime(0.8, audioCtx.currentTime + 0.02);
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
                     
                     osc.connect(gainNode);
                     gainNode.connect(audioCtx.destination);
-                    
                     osc.start();
-                    osc.stop(audioCtx.currentTime + 0.4);
+                    osc.stop(audioCtx.currentTime + 0.2);
+
+                    // 2. Whoosh (Paper sliding)
+                    const bufferSize = audioCtx.sampleRate * 0.2; // 0.2 seconds
+                    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                    const data = buffer.getChannelData(0);
+                    for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+                    
+                    const noise = audioCtx.createBufferSource();
+                    noise.buffer = buffer;
+                    const noiseFilter = audioCtx.createBiquadFilter();
+                    noiseFilter.type = 'lowpass';
+                    noiseFilter.frequency.value = 800;
+                    
+                    const noiseGain = audioCtx.createGain();
+                    noiseGain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+                    noiseGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+                    
+                    noise.connect(noiseFilter);
+                    noiseFilter.connect(noiseGain);
+                    noiseGain.connect(audioCtx.destination);
+                    
+                    noise.start();
                 } catch(e) { console.log("Audio API not supported", e); }
             }
 
@@ -645,7 +674,7 @@
                 if (isOpening) return;
                 isOpening = true;
 
-                // Vibrate and play sound
+                // Vibrate (Android only due to Apple iOS restrictions) and play sound
                 if (navigator.vibrate) navigator.vibrate([50, 100, 50]);
                 playUnsealSound();
 
