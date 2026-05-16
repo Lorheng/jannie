@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Happy Birthday Jannie</title>
     
     <!-- Fonts: Inter for clean text, Playfair Display for elegant headings -->
@@ -16,32 +16,31 @@
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
+    <!-- Canvas Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #F0F9FF; /* sky-50 for a light blue tint */
-            color: #334155; /* slate-700 */
+            background-color: #F0F9FF; /* sky-50 */
+            color: #334155; 
             -webkit-tap-highlight-color: transparent;
+            overflow-x: hidden;
         }
         
         h1, h2, .font-serif-elegant {
             font-family: 'Playfair Display', serif;
         }
 
-        /* Envelope Animations & Intro Styles */
-        .rotate-x-180 {
-            transform: rotateX(180deg);
-        }
-        .letter-pull {
-            transform: translateY(-90px);
-        }
-        .seal-break {
-            transform: translate(-50%, -50%) scale(1.5) !important;
-            opacity: 0;
-        }
+        /* Envelope Animations */
+        .rotate-x-180 { transform: rotateX(180deg); }
+        .letter-pull { transform: translateY(-90px); }
+        .seal-break { transform: translate(-50%, -50%) scale(1.5) !important; opacity: 0; }
+        
+        /* Floating background particles */
         .dust {
             position: absolute;
-            background: rgba(125, 211, 252, 0.4); /* sky-300 with low opacity */
+            background: rgba(125, 211, 252, 0.4); 
             border-radius: 50%;
             animation: float-up linear infinite;
         }
@@ -52,88 +51,135 @@
             100% { transform: translateY(-10vh) scale(1); opacity: 0; }
         }
 
-        /* Smooth fade transitions */
-        .fade-out {
+        /* Scroll Reveal Animations */
+        .reveal {
             opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.8s ease-out;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
-        
-        .fade-in {
-            opacity: 1 !important;
-            transform: translateY(0) !important;
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
         }
 
-        /* Clean Glassmorphism for the player */
+        /* Typewriter Cursor */
+        .type-cursor::after {
+            content: '|';
+            animation: blink 1s step-end infinite;
+            color: #38bdf8; /* sky-400 */
+        }
+        .type-cursor.done::after {
+            display: none;
+        }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        /* Make A Wish Particles */
+        .wish-star {
+            position: fixed;
+            bottom: -20px;
+            pointer-events: none;
+            z-index: 60;
+            animation: float-wish linear forwards;
+            color: #7dd3fc;
+            text-shadow: 0 0 10px rgba(125, 211, 252, 0.8);
+        }
+        @keyframes float-wish { 
+            0% { transform: translateY(0) rotate(0deg) scale(0.5); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-110vh) rotate(360deg) scale(1.2); opacity: 0; }
+        }
+
+        /* Spotify Equalizer Bars */
+        .equalizer {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 3px;
+            height: 20px;
+            width: 20px;
+        }
+        .eq-bar {
+            width: 4px;
+            background-color: #0ea5e9; /* sky-500 */
+            border-radius: 2px;
+            animation: equalize 0.8s infinite alternate ease-in-out;
+        }
+        .eq-bar:nth-child(1) { animation-delay: -0.8s; }
+        .eq-bar:nth-child(2) { animation-delay: -0.4s; }
+        .eq-bar:nth-child(3) { animation-delay: -0.2s; }
+        
+        @keyframes equalize {
+            0% { height: 4px; }
+            100% { height: 20px; }
+        }
+        /* Pause the equalizer when music is paused */
+        .equalizer.paused .eq-bar {
+            animation-play-state: paused;
+            height: 4px;
+            transition: height 0.3s ease;
+        }
+
+        /* Scratch-Off Canvas */
+        #scratch-canvas {
+            touch-action: none; /* Prevents scrolling while scratching */
+            -webkit-user-select: none;
+        }
+
+        /* Utilities */
+        .fade-out { opacity: 0; pointer-events: none; transition: opacity 0.8s ease-out; }
+        .fade-in { opacity: 1 !important; transform: translateY(0) !important; }
+        
         .glass-nav {
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border-top: 1px solid rgba(0,0,0,0.05);
         }
 
-        /* Initial state for main content */
         #main-content {
             opacity: 0;
             transform: translateY(20px);
             transition: opacity 1s ease-out, transform 1s ease-out;
         }
 
-        /* Image hover effects */
-        .img-card {
-            break-inside: avoid;
-            margin-bottom: 1rem;
-        }
-        .img-card img {
-            transition: transform 0.5s ease;
-        }
-        .img-card:hover img {
-            transform: scale(1.02);
-        }
+        .img-card { break-inside: avoid; margin-bottom: 1rem; position: relative; }
+        .img-card img { transition: transform 0.3s ease; }
+        .img-card:active img { transform: scale(0.98); }
+        body.lightbox-open { overflow: hidden; }
     </style>
 </head>
+
 <body class="antialiased selection:bg-sky-200">
 
-    <!-- Interactive Envelope Intro Screen -->
+    <!-- Envelope Intro Screen -->
     <div id="intro-screen" class="fixed inset-0 z-50 bg-[#F0F9FF] flex flex-col items-center justify-center p-6 overflow-hidden">
-        
-        <!-- Floating Particles Container -->
         <div id="intro-particles" class="absolute inset-0 pointer-events-none"></div>
 
-        <!-- Greeting Text -->
         <div class="text-center mb-16 z-10 transition-opacity duration-500" id="intro-text">
             <p class="text-sky-500 text-xs tracking-[0.3em] uppercase mb-3">May 16</p>
             <h1 class="font-serif-elegant text-3xl text-slate-800">A special delivery</h1>
         </div>
 
-        <!-- Envelope Structure -->
         <div id="envelope-wrapper" class="relative w-80 h-52 cursor-pointer z-10 transition-transform duration-300 hover:scale-[1.02] active:scale-95">
-            
-            <!-- Envelope Back (Darkest inside) -->
             <div class="absolute inset-0 bg-sky-400 rounded-lg shadow-md"></div>
             
-            <!-- The Letter -->
             <div id="env-letter" class="absolute left-3 right-3 top-3 bottom-3 bg-white rounded-md flex flex-col items-center justify-center z-10 transition-transform duration-700 ease-in-out shadow-sm border border-sky-100">
-                <i class="ph-light ph-sparkle text-2xl text-sky-300 mb-2"></i>
+                <i class="ph-light ph-gift text-3xl text-sky-300 mb-2"></i>
                 <h2 class="font-serif-elegant text-2xl text-slate-800">For Jannie</h2>
             </div>
 
-            <!-- Envelope Front Flaps -->
             <div class="absolute inset-0 z-20 pointer-events-none rounded-lg overflow-hidden">
-                <!-- Left Flap -->
                 <div class="absolute top-0 left-0 w-1/2 h-full bg-sky-200 shadow-[2px_0_5px_rgba(0,0,0,0.05)]" style="clip-path: polygon(0 0, 100% 50%, 0 100%);"></div>
-                <!-- Right Flap -->
                 <div class="absolute top-0 right-0 w-1/2 h-full bg-sky-200 shadow-[-2px_0_5px_rgba(0,0,0,0.05)]" style="clip-path: polygon(100% 0, 0 50%, 100% 100%);"></div>
-                <!-- Bottom Flap -->
                 <div class="absolute bottom-0 left-0 w-full h-[60%] bg-sky-100 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]" style="clip-path: polygon(0 100%, 50% 0, 100% 100%);"></div>
             </div>
 
-            <!-- Top Flap (Animated opening) -->
             <div id="env-flap" class="absolute top-0 left-0 w-full h-[60%] bg-sky-300 z-30 origin-top transition-transform duration-700 ease-in-out drop-shadow-[0_3px_5px_rgba(0,0,0,0.1)]" style="clip-path: polygon(0 0, 100% 0, 50% 100%);"></div>
 
-            <!-- Interactive Wax Seal -->
+            <!-- Wax Seal (Star) -->
             <div id="env-seal" class="absolute top-[125px] left-1/2 -translate-x-1/2 -translate-y-1/2 w-14 h-14 bg-sky-500 rounded-full flex items-center justify-center z-40 transition-all duration-500 shadow-lg border-2 border-sky-400">
-                <i class="ph-fill ph-star text-white text-xl animate-pulse"></i>
+                <i class="ph-fill ph-star text-white text-2xl animate-pulse"></i>
             </div>
         </div>
 
@@ -141,73 +187,140 @@
     </div>
 
     <!-- Main Content -->
-    <div id="main-content" class="min-h-screen pb-32">
+    <div id="main-content" class="min-h-screen pb-32 hidden-initially">
         
         <!-- Header / Greeting Section -->
-        <header class="pt-20 pb-12 px-6 max-w-lg mx-auto text-center">
-            <p class="text-sky-500 text-xs font-medium tracking-[0.2em] uppercase mb-4">Happy Birthday</p>
-            <h1 class="text-5xl font-serif-elegant text-slate-800 mb-6 leading-tight">
-                Welcome to<br>the 20s life,<br>
-                <span class="italic text-slate-600">Jannie.</span>
+        <header class="pt-20 pb-12 px-6 max-w-lg mx-auto text-center relative z-10">
+            <p class="text-sky-500 text-xs font-medium tracking-[0.2em] uppercase mb-4 reveal">Happy Birthday</p>
+            
+            <!-- Typewriter Container -->
+            <h1 class="text-5xl font-serif-elegant text-slate-800 mb-6 leading-tight min-h-[180px] flex flex-col justify-center">
+                <span id="tw-line1"></span>
+                <span id="tw-line2"></span>
+                <span id="tw-line3" class="italic text-slate-600"></span>
+                <span id="tw-line4" class="text-2xl text-sky-400 mt-2 font-sans font-light"></span>
             </h1>
             
-            <div class="w-12 h-px bg-sky-300 mx-auto mb-8"></div>
+            <div class="w-12 h-px bg-sky-300 mx-auto mb-8 reveal" style="transition-delay: 0.2s"></div>
             
-            <p class="text-slate-600 text-base leading-relaxed px-4">
+            <p class="text-slate-600 text-base leading-relaxed px-4 reveal" style="transition-delay: 0.3s">
                 Wishing you a wonderful year ahead filled with joy, growth, and amazing memories. May this new chapter bring you happiness and all the simple things that make life beautiful. Have the best day!
             </p>
         </header>
 
-        <!-- Photo Gallery (Masonry Grid) -->
+        <!-- Photo Gallery (Masonry Grid with Scroll Reveal & Lightbox) -->
         <section class="px-4 max-w-2xl mx-auto">
-            <!-- Tailwind CSS Columns for pure CSS masonry -->
             <div class="columns-2 gap-4 space-y-4">
-                <!-- Image 1 -->
-                <div class="img-card rounded-xl overflow-hidden shadow-sm bg-white">
-                    <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4658.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover" loading="lazy">
+                
+                <div class="img-card reveal cursor-pointer group" onclick="openLightbox('https://github.com/Lorheng/jannie/blob/main/IMG_4658.JPG?raw=true')">
+                    <div class="rounded-xl overflow-hidden shadow-sm bg-white relative">
+                        <div class="absolute inset-0 bg-sky-900/0 group-active:bg-sky-900/10 transition-colors z-10"></div>
+                        <i class="ph-fill ph-arrows-out absolute top-3 right-3 text-white drop-shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-20"></i>
+                        <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4658.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover" loading="lazy">
+                    </div>
                 </div>
-                <!-- Image 2 -->
-                <div class="img-card rounded-xl overflow-hidden shadow-sm bg-white">
-                    <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4657.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover" loading="lazy">
+
+                <div class="img-card reveal cursor-pointer group" onclick="openLightbox('https://github.com/Lorheng/jannie/blob/main/IMG_4657.JPG?raw=true')">
+                    <div class="rounded-xl overflow-hidden shadow-sm bg-white relative">
+                        <div class="absolute inset-0 bg-sky-900/0 group-active:bg-sky-900/10 transition-colors z-10"></div>
+                        <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4657.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover" loading="lazy">
+                    </div>
                 </div>
-                <!-- Image 3 -->
-                <div class="img-card rounded-xl overflow-hidden shadow-sm bg-white">
-                    <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4655.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover" loading="lazy">
+
+                <div class="img-card reveal cursor-pointer group" onclick="openLightbox('https://github.com/Lorheng/jannie/blob/main/IMG_4655.JPG?raw=true')">
+                    <div class="rounded-xl overflow-hidden shadow-sm bg-white relative">
+                        <div class="absolute inset-0 bg-sky-900/0 group-active:bg-sky-900/10 transition-colors z-10"></div>
+                        <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4655.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover" loading="lazy">
+                    </div>
                 </div>
-                <!-- Image 4 -->
-                <div class="img-card rounded-xl overflow-hidden shadow-sm bg-white">
-                    <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4656.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover" loading="lazy">
+
+                <div class="img-card reveal cursor-pointer group" onclick="openLightbox('https://github.com/Lorheng/jannie/blob/main/IMG_4656.JPG?raw=true')">
+                    <div class="rounded-xl overflow-hidden shadow-sm bg-white relative">
+                        <div class="absolute inset-0 bg-sky-900/0 group-active:bg-sky-900/10 transition-colors z-10"></div>
+                        <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4656.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover" loading="lazy">
+                    </div>
                 </div>
-                <!-- Image 5 -->
-                <div class="img-card rounded-xl overflow-hidden shadow-sm bg-white">
-                    <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4653.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover" loading="lazy">
+
+                <div class="img-card reveal cursor-pointer group" onclick="openLightbox('https://github.com/Lorheng/jannie/blob/main/IMG_4653.JPG?raw=true')">
+                    <div class="rounded-xl overflow-hidden shadow-sm bg-white relative">
+                        <div class="absolute inset-0 bg-sky-900/0 group-active:bg-sky-900/10 transition-colors z-10"></div>
+                        <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4653.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover" loading="lazy">
+                    </div>
                 </div>
-                <!-- Image 6 -->
-                <div class="img-card rounded-xl overflow-hidden shadow-sm bg-white">
-                    <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4660.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover" loading="lazy">
+
+                <div class="img-card reveal cursor-pointer group" onclick="openLightbox('https://github.com/Lorheng/jannie/blob/main/IMG_4660.JPG?raw=true')">
+                    <div class="rounded-xl overflow-hidden shadow-sm bg-white relative">
+                        <div class="absolute inset-0 bg-sky-900/0 group-active:bg-sky-900/10 transition-colors z-10"></div>
+                        <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4660.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover" loading="lazy">
+                    </div>
                 </div>
-                <!-- Image 7 -->
-                <div class="img-card rounded-xl overflow-hidden shadow-sm bg-white">
-                    <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4654.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover" loading="lazy">
+
+                <div class="img-card reveal cursor-pointer group" onclick="openLightbox('https://github.com/Lorheng/jannie/blob/main/IMG_4654.JPG?raw=true')">
+                    <div class="rounded-xl overflow-hidden shadow-sm bg-white relative">
+                        <div class="absolute inset-0 bg-sky-900/0 group-active:bg-sky-900/10 transition-colors z-10"></div>
+                        <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4654.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover" loading="lazy">
+                    </div>
                 </div>
-                <!-- Image 8 -->
-                <div class="img-card rounded-xl overflow-hidden shadow-sm bg-white">
-                    <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4659.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover" loading="lazy">
+
+                <div class="img-card reveal cursor-pointer group" onclick="openLightbox('https://github.com/Lorheng/jannie/blob/main/IMG_4659.JPG?raw=true')">
+                    <div class="rounded-xl overflow-hidden shadow-sm bg-white relative">
+                        <div class="absolute inset-0 bg-sky-900/0 group-active:bg-sky-900/10 transition-colors z-10"></div>
+                        <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4659.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover" loading="lazy">
+                    </div>
                 </div>
-                <!-- Image 9 -->
-                <div class="img-card rounded-xl overflow-hidden shadow-sm bg-white">
-                    <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4650.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover" loading="lazy">
+
+                <div class="img-card reveal cursor-pointer group" onclick="openLightbox('https://github.com/Lorheng/jannie/blob/main/IMG_4650.JPG?raw=true')">
+                    <div class="rounded-xl overflow-hidden shadow-sm bg-white relative">
+                        <div class="absolute inset-0 bg-sky-900/0 group-active:bg-sky-900/10 transition-colors z-10"></div>
+                        <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4650.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover" loading="lazy">
+                    </div>
                 </div>
-                <!-- Image 10 -->
-                <div class="img-card rounded-xl overflow-hidden shadow-sm bg-white">
-                    <img src="https://github.com/Lorheng/jannie/blob/main/Gemini_Generated_Image_ishjwnishjwnishj.png?raw=true" alt="Jannie" class="w-full h-auto object-cover" loading="lazy">
+
+                <div class="img-card reveal cursor-pointer group" onclick="openLightbox('https://github.com/Lorheng/jannie/blob/main/Gemini_Generated_Image_ishjwnishjwnishj.png?raw=true')">
+                    <div class="rounded-xl overflow-hidden shadow-sm bg-white relative">
+                        <div class="absolute inset-0 bg-sky-900/0 group-active:bg-sky-900/10 transition-colors z-10"></div>
+                        <img src="https://github.com/Lorheng/jannie/blob/main/Gemini_Generated_Image_ishjwnishjwnishj.png?raw=true" alt="Jannie" class="w-full h-auto object-cover" loading="lazy">
+                    </div>
                 </div>
+
             </div>
         </section>
 
-        <div class="text-center mt-16 mb-8 text-sky-400">
-            <i class="ph-fill ph-star text-xl"></i>
+        <!-- Interactive Ending Section -->
+        <div class="text-center mt-24 mb-12 px-6 flex flex-col items-center justify-center reveal">
+            
+            <!-- The Scratch-Off Message Card -->
+            <div class="mb-12 relative w-full max-w-sm mx-auto h-32 rounded-2xl shadow-sm border border-sky-100 flex items-center justify-center overflow-hidden bg-white">
+                <!-- Hidden Secret Message -->
+                <div class="absolute inset-0 flex items-center justify-center p-4 text-center">
+                    <p class="text-sky-700 font-medium text-sm leading-relaxed">
+                        I am so proud of everything you are becoming.<br>Welcome to your 20s. 💙
+                    </p>
+                </div>
+                <!-- The Canvas (Frost) layered on top -->
+                <canvas id="scratch-canvas" class="absolute inset-0 w-full h-full z-10 cursor-pointer"></canvas>
+            </div>
+
+            <!-- Make a wish button -->
+            <button id="wish-btn" class="relative group px-8 py-4 bg-white border border-sky-200 rounded-full shadow-sm hover:shadow-md hover:border-sky-300 active:scale-95 transition-all duration-300 overflow-hidden">
+                <div class="absolute inset-0 bg-sky-50 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-500"></div>
+                <span class="relative z-10 flex items-center gap-2 text-sky-600 font-medium tracking-wide">
+                    <i class="ph-fill ph-magic-wand text-xl"></i> Make a wish...
+                </span>
+            </button>
+
+            <!-- Sender Name -->
+            <p class="mt-16 text-slate-400 text-sm tracking-widest font-light">by Ch...li</p>
         </div>
+    </div>
+
+    <!-- Tap-to-Enlarge Lightbox Overlay -->
+    <div id="lightbox" class="fixed inset-0 z-[100] bg-slate-900/95 backdrop-blur-sm hidden flex-col items-center justify-center opacity-0 transition-opacity duration-300" onclick="closeLightbox(event)">
+        <button id="lightbox-close" class="absolute top-6 right-6 text-white/70 hover:text-white p-3 rounded-full bg-white/10 active:bg-white/20 transition-colors">
+            <i class="ph ph-x text-2xl"></i>
+        </button>
+        <!-- The enlarged image -->
+        <img id="lightbox-img" src="" class="max-w-[95%] max-h-[75vh] object-contain rounded-lg shadow-2xl transition-transform duration-300 scale-95" alt="Enlarged view">
     </div>
 
     <!-- Audio Element -->
@@ -215,11 +328,16 @@
         <source src="https://raw.githubusercontent.com/Lorheng/jannie/main/About%20You-The%201975.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- Floating Minimalist Player -->
+    <!-- Floating Music Player -->
     <div id="music-player" class="fixed bottom-0 left-0 w-full glass-nav px-6 py-4 flex items-center justify-between z-40 transform translate-y-full transition-transform duration-700">
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-4">
+            <!-- Animated Spotify Equalizer -->
             <div class="w-10 h-10 rounded-full bg-sky-100 flex items-center justify-center overflow-hidden">
-                <i class="ph ph-music-notes text-sky-600 text-lg"></i>
+                <div id="eq-bars" class="equalizer paused">
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                </div>
             </div>
             <div>
                 <p class="text-sm font-medium text-slate-800">About You</p>
@@ -233,9 +351,37 @@
     </div>
 
     <script>
+        // --- Lightbox Logic ---
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+
+        window.openLightbox = function(imageSrc) {
+            lightboxImg.src = imageSrc;
+            
+            lightbox.classList.remove('hidden');
+            document.body.classList.add('lightbox-open'); 
+            
+            requestAnimationFrame(() => {
+                lightbox.classList.remove('opacity-0');
+                lightboxImg.classList.remove('scale-95');
+                lightboxImg.classList.add('scale-100');
+            });
+        };
+
+        window.closeLightbox = function(e) {
+            lightbox.classList.add('opacity-0');
+            lightboxImg.classList.remove('scale-100');
+            lightboxImg.classList.add('scale-95');
+            document.body.classList.remove('lightbox-open');
+            
+            setTimeout(() => {
+                lightbox.classList.add('hidden');
+                lightboxImg.src = '';
+            }, 300);
+        };
+
         document.addEventListener('DOMContentLoaded', () => {
             
-            // Elements
             const introScreen = document.getElementById('intro-screen');
             const mainContent = document.getElementById('main-content');
             
@@ -247,52 +393,72 @@
             const instructionText = document.getElementById('instruction-text');
             const introParticles = document.getElementById('intro-particles');
 
+            // Audio Elements
             const musicPlayer = document.getElementById('music-player');
             const playPauseBtn = document.getElementById('play-pause-btn');
             const playIcon = document.getElementById('play-icon');
             const bgAudio = document.getElementById('bg-audio');
+            const eqBars = document.getElementById('eq-bars');
 
             let isPlaying = false;
 
-            // --- Audio Controls & UI Updates ---
-            function playAudio() {
-                bgAudio.play().then(() => {
-                    isPlaying = true;
-                    updateIcon();
-                }).catch(error => {
-                    console.log("Autoplay blocked or audio failed to load:", error);
-                });
+            // --- STREAMING_CHUNK:Initializing Scratch-Off Card Setup... ---
+            const canvas = document.getElementById('scratch-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas size strictly to its container size
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            
+            // Draw the "Frost"
+            ctx.fillStyle = '#e0f2fe'; // Tailwind sky-100
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw the instructional text over the frost
+            ctx.font = '14px Inter';
+            ctx.fillStyle = '#38bdf8'; // Tailwind sky-400
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('Scratch to reveal a secret...', canvas.width/2, canvas.height/2);
+
+            // Scratching mechanics
+            let isDrawing = false;
+
+            function getMousePos(evt) {
+                const rect = canvas.getBoundingClientRect();
+                // Handle both touch and mouse events gracefully
+                const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+                const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
+                return {
+                    x: clientX - rect.left,
+                    y: clientY - rect.top
+                };
             }
 
-            function updateIcon() {
-                if (isPlaying) {
-                    playIcon.classList.remove('ph-play');
-                    playIcon.classList.add('ph-pause');
-                } else {
-                    playIcon.classList.remove('ph-pause');
-                    playIcon.classList.add('ph-play');
-                }
+            function scratch(evt) {
+                if (!isDrawing) return;
+                evt.preventDefault(); // Prevent scrolling on mobile while scratching
+                
+                const pos = getMousePos(evt);
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 20, 0, Math.PI * 2, false); // 20px eraser size
+                ctx.fill();
             }
 
-            // Play/Pause Button Toggle
-            playPauseBtn.addEventListener('click', () => {
-                if (isPlaying) {
-                    bgAudio.pause();
-                    isPlaying = false;
-                } else {
-                    bgAudio.play();
-                    isPlaying = true;
-                }
-                updateIcon();
-            });
+            // Mouse Events
+            canvas.addEventListener('mousedown', (e) => { isDrawing = true; scratch(e); });
+            canvas.addEventListener('mousemove', scratch);
+            window.addEventListener('mouseup', () => isDrawing = false);
 
-            // Handle track ending (optional: loop it)
-            bgAudio.addEventListener('ended', () => {
-                bgAudio.currentTime = 0;
-                bgAudio.play(); // Loop the song
-            });
+            // Touch Events (Mobile)
+            canvas.addEventListener('touchstart', (e) => { isDrawing = true; scratch(e); });
+            canvas.addEventListener('touchmove', scratch);
+            window.addEventListener('touchend', () => isDrawing = false);
 
-            // --- 0. Generate Intro Particles ---
+
+            // --- STREAMING_CHUNK:Initializing Particle Systems & Intersection Observers... ---
+            // Intro Particles
             for(let i = 0; i < 20; i++) {
                 const particle = document.createElement('div');
                 particle.className = 'dust';
@@ -304,9 +470,70 @@
                 introParticles.appendChild(particle);
             }
 
-            // --- Intro Envelope Logic ---
-            let isOpening = false;
+            // Scroll Reveal Observer
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        revealObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
 
+
+            // --- STREAMING_CHUNK:Defining Typewriter & Envelope Animation Logic... ---
+            // Typewriter
+            const twLine1 = document.getElementById('tw-line1');
+            const twLine2 = document.getElementById('tw-line2');
+            const twLine3 = document.getElementById('tw-line3');
+            const twLine4 = document.getElementById('tw-line4');
+
+            async function typeText(element, text, speed = 80) {
+                element.classList.add('type-cursor');
+                for (let i = 0; i < text.length; i++) {
+                    element.innerHTML += text.charAt(i);
+                    await new Promise(r => setTimeout(r, speed));
+                }
+                element.classList.remove('type-cursor');
+            }
+
+            async function startTypewriterSequence() {
+                await typeText(twLine1, "Welcome to");
+                await new Promise(r => setTimeout(r, 200)); 
+                await typeText(twLine2, "the 20s life,");
+                await new Promise(r => setTimeout(r, 400)); 
+                await typeText(twLine3, "Jannie.", 120); 
+                await new Promise(r => setTimeout(r, 300)); 
+                await typeText(twLine4, "(Kimleng)", 100); 
+                twLine4.classList.add('type-cursor'); 
+            }
+
+            // Audio Fade-In Function
+            function playAudioWithFade(startTime) {
+                bgAudio.currentTime = startTime;
+                bgAudio.volume = 0; // Start at volume 0
+                
+                bgAudio.play().then(() => {
+                    isPlaying = true;
+                    updateIcon();
+                    
+                    // Fade in gradually over 2.5 seconds (25 steps of 100ms)
+                    let fadePoint = 0;
+                    const fadeInterval = setInterval(() => {
+                        fadePoint += 0.04;
+                        if(fadePoint >= 1.0) {
+                            bgAudio.volume = 1.0;
+                            clearInterval(fadeInterval);
+                        } else {
+                            bgAudio.volume = fadePoint;
+                        }
+                    }, 100);
+                    
+                }).catch(e => console.log("Audio autoplay prevented by browser"));
+            }
+
+            // Envelope Interaction
+            let isOpening = false;
             envelopeWrapper.addEventListener('click', () => {
                 if (isOpening) return;
                 isOpening = true;
@@ -315,36 +542,104 @@
                 envSeal.classList.add('seal-break');
                 instructionText.style.opacity = '0';
 
+                // Confetti Burst!
+                setTimeout(() => {
+                    confetti({
+                        particleCount: 120,
+                        spread: 80,
+                        origin: { y: 0.6 },
+                        colors: ['#7dd3fc', '#bae6fd', '#ffffff', '#e0f2fe'],
+                        disableForReducedMotion: true
+                    });
+                }, 200);
+
                 // 2. Open the top flap
                 setTimeout(() => {
                     envFlap.classList.add('rotate-x-180');
-                    envFlap.style.zIndex = '15'; // Drop behind the letter as it opens
+                    envFlap.style.zIndex = '15';
                 }, 350);
 
                 // 3. Pull out the letter
                 setTimeout(() => {
                     envLetter.classList.add('letter-pull');
-                    envLetter.style.zIndex = '35'; // Bring above front flaps
+                    envLetter.style.zIndex = '35';
                 }, 900);
 
-                // 4. Fade out intro & Start main experience
+                // 4. Fade to Main Content
                 setTimeout(() => {
                     introScreen.classList.add('fade-out');
                     
                     setTimeout(() => {
                         introScreen.style.display = 'none';
+                        mainContent.classList.remove('hidden-initially');
                         mainContent.classList.add('fade-in');
                         
-                        // Show Music Player
-                        setTimeout(() => {
-                            musicPlayer.classList.remove('translate-y-full');
-                        }, 500);
+                        document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+                        setTimeout(startTypewriterSequence, 500);
 
-                        // Start Music at 0:23
-                        bgAudio.currentTime = 23;
-                        playAudio();
-                    }, 800); // Wait for fade out
-                }, 2800); // Give user time to see the pulled letter
+                        // Show Music Player
+                        setTimeout(() => { musicPlayer.classList.remove('translate-y-full'); }, 1000);
+
+                        // Play audio with Fade In!
+                        playAudioWithFade(23);
+
+                    }, 800);
+                }, 2800);
+            });
+
+            // --- STREAMING_CHUNK:Finalizing Audio Controls & Ending Interactions... ---
+            // Make a Wish Button
+            const wishBtn = document.getElementById('wish-btn');
+            wishBtn.addEventListener('click', () => {
+                if (navigator.vibrate) navigator.vibrate(50);
+                
+                wishBtn.innerHTML = `<span class="relative z-10 flex items-center gap-2 text-sky-500 font-medium"><i class="ph-fill ph-check-circle text-xl"></i> Wish sent!</span>`;
+                wishBtn.classList.add('pointer-events-none');
+
+                for(let i = 0; i < 30; i++) {
+                    setTimeout(() => {
+                        const star = document.createElement('i');
+                        star.className = Math.random() > 0.5 ? 'ph-fill ph-star wish-star' : 'ph ph-star wish-star';
+                        const size = Math.random() * 20 + 10; 
+                        const left = Math.random() * 100; 
+                        const duration = Math.random() * 3 + 2; 
+                        
+                        star.style.fontSize = `${size}px`;
+                        star.style.left = `${left}%`;
+                        star.style.animationDuration = `${duration}s`;
+                        document.body.appendChild(star);
+                        setTimeout(() => star.remove(), duration * 1000);
+                    }, i * 100);
+                }
+            });
+
+            // Audio Control Logic
+            function updateIcon() {
+                if (isPlaying) {
+                    playIcon.classList.remove('ph-play');
+                    playIcon.classList.add('ph-pause');
+                    eqBars.classList.remove('paused'); // Start equalizer animation
+                } else {
+                    playIcon.classList.remove('ph-pause');
+                    playIcon.classList.add('ph-play');
+                    eqBars.classList.add('paused'); // Stop equalizer animation
+                }
+            }
+
+            playPauseBtn.addEventListener('click', () => {
+                if (isPlaying) {
+                    bgAudio.pause();
+                    isPlaying = false;
+                } else {
+                    bgAudio.play();
+                    isPlaying = true;
+                }
+                updateIcon();
+            });
+
+            bgAudio.addEventListener('ended', () => {
+                bgAudio.currentTime = 0;
+                bgAudio.play();
             });
 
         });
