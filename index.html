@@ -194,7 +194,7 @@
     </div>
 
     <!-- Main Content -->
-    <div id="main-content" class="min-h-screen pb-32 hidden-initially relative z-30">
+    <div id="main-content" class="min-h-screen pb-32 hidden-initially relative z-30 hidden">
         
         <header class="pt-20 pb-10 px-6 max-w-lg mx-auto text-center relative z-10">
             <p class="text-sky-500 text-xs font-medium tracking-[0.2em] uppercase mb-4 reveal">Happy Birthday</p>
@@ -208,13 +208,20 @@
             </h1>
             
             <div class="w-12 h-px bg-sky-300 mx-auto mb-6 reveal" style="transition-delay: 0.2s"></div>
+
+            <!-- Beautiful Visible Wish Message -->
+            <div class="mt-4 mb-2 flex flex-col items-center justify-center reveal" style="transition-delay: 0.4s">
+                <p class="text-slate-600 text-sm leading-relaxed max-w-sm mx-auto">
+                    Wishing you a year filled with endless joy, beautiful memories, and all the happiness you deserve. Have a wonderful day! 💙
+                </p>
+            </div>
         </header>
 
         <section class="px-4 max-w-2xl mx-auto relative z-10">
             <!-- Split into two columns for Parallax logic -->
             <div class="flex gap-4 items-start">
                 
-                <!-- Left Column (Moves up faster) -->
+                <!-- Left Column -->
                 <div class="flex-1 space-y-4 parallax-col-1">
                     <div class="img-card reveal cursor-pointer group" onclick="openLightbox('https://github.com/Lorheng/jannie/blob/main/IMG_4658.JPG?raw=true')">
                         <div class="rounded-xl overflow-hidden shadow-sm bg-white relative">
@@ -248,7 +255,7 @@
                     </div>
                 </div>
 
-                <!-- Right Column (Moves slower, creating depth) -->
+                <!-- Right Column -->
                 <div class="flex-1 space-y-4 parallax-col-2 mt-8">
                     <div class="img-card reveal cursor-pointer group" onclick="openLightbox('https://github.com/Lorheng/jannie/blob/main/IMG_4657.JPG?raw=true')">
                         <div class="rounded-xl overflow-hidden shadow-sm bg-white relative">
@@ -281,18 +288,17 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </section>
 
-        <div class="text-center mt-24 mb-12 px-6 flex flex-col items-center justify-center relative z-10">
+        <div class="text-center mt-20 mb-12 px-6 flex flex-col items-center justify-center relative z-10">
             
             <!-- The Scratch-Off Message Card -->
-            <div class="mb-12 relative w-full max-w-sm mx-auto h-32 rounded-2xl shadow-sm border border-sky-100 flex items-center justify-center overflow-hidden bg-white reveal">
+            <div class="mb-12 relative w-full max-w-[320px] mx-auto h-32 rounded-2xl shadow-sm border border-sky-100 flex items-center justify-center overflow-hidden bg-white reveal">
                 <!-- Hidden Secret Message -->
-                <div class="absolute inset-0 flex items-center justify-center p-4 text-center">
+                <div class="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
                     <p class="text-sky-700 font-medium text-sm leading-relaxed">
-                        I am so proud of everything you are becoming.<br>Welcome to your 20s. 💙
+                        I am so proud of everything you are becoming.
                     </p>
                 </div>
                 <!-- The Canvas (Frost) layered on top -->
@@ -319,13 +325,13 @@
         </div>
     </div>
 
-    <!-- Tap-to-Enlarge Lightbox Overlay -->
-    <div id="lightbox" class="fixed inset-0 z-[100] bg-slate-900/95 backdrop-blur-md hidden flex-col items-center justify-center opacity-0 transition-opacity duration-300" onclick="closeLightbox(event)">
-        <button id="lightbox-close" class="absolute top-6 right-6 text-white/70 hover:text-white p-3 rounded-full bg-white/10 active:bg-white/20 transition-colors">
+    <!-- Tap-to-Enlarge Lightbox Overlay (FIXED: Added 'flex' so items center correctly) -->
+    <div id="lightbox" class="fixed inset-0 z-[100] bg-slate-900/95 backdrop-blur-md flex flex-col items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300" onclick="closeLightbox(event)">
+        <button id="lightbox-close" class="absolute top-6 right-6 text-white/70 hover:text-white p-3 rounded-full bg-white/10 active:bg-white/20 transition-colors z-50">
             <i class="ph ph-x text-2xl"></i>
         </button>
         <!-- The enlarged image -->
-        <img id="lightbox-img" src="" class="max-w-[95%] max-h-[75vh] object-contain rounded-lg shadow-2xl transition-transform duration-300 scale-95" alt="Enlarged view">
+        <img id="lightbox-img" src="" class="max-w-[95%] max-h-[85vh] object-contain rounded-lg shadow-2xl transition-transform duration-300 scale-95" alt="Enlarged view">
     </div>
 
     <!-- Audio Elements -->
@@ -362,24 +368,27 @@
 
         window.openLightbox = function(imageSrc) {
             lightboxImg.src = imageSrc;
-            lightbox.classList.remove('hidden');
+            
+            // Replaced 'hidden' logic with pointer-events to keep flexbox centering working
+            lightbox.classList.remove('opacity-0', 'pointer-events-none');
             document.body.classList.add('lightbox-open'); 
             
             requestAnimationFrame(() => {
-                lightbox.classList.remove('opacity-0');
                 lightboxImg.classList.remove('scale-95');
                 lightboxImg.classList.add('scale-100');
             });
         };
 
         window.closeLightbox = function(e) {
-            lightbox.classList.add('opacity-0');
+            // Prevent closing if they tap directly on the image itself
+            if(e.target === lightboxImg) return;
+
+            lightbox.classList.add('opacity-0', 'pointer-events-none');
             lightboxImg.classList.remove('scale-100');
             lightboxImg.classList.add('scale-95');
             document.body.classList.remove('lightbox-open');
             
             setTimeout(() => {
-                lightbox.classList.add('hidden');
                 lightboxImg.src = '';
             }, 300);
         };
@@ -410,20 +419,23 @@
             // --- Scratch-Off Logic ---
             const canvas = document.getElementById('scratch-canvas');
             const ctx = canvas.getContext('2d');
-            
-            canvas.width = canvas.offsetWidth;
-            canvas.height = canvas.offsetHeight;
-            
-            ctx.fillStyle = '#e0f2fe'; 
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            ctx.font = '14px Inter';
-            ctx.fillStyle = '#38bdf8';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText('Scratch to reveal a secret...', canvas.width/2, canvas.height/2);
-
             let isDrawing = false;
+
+            function initScratchCard() {
+                // Get the exact dimensions of the container once visible
+                const rect = canvas.parentElement.getBoundingClientRect();
+                canvas.width = rect.width;
+                canvas.height = rect.height;
+                
+                ctx.fillStyle = '#e0f2fe'; 
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.font = '500 14px Inter';
+                ctx.fillStyle = '#38bdf8';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('Scratch to reveal a secret...', canvas.width/2, canvas.height/2);
+            }
 
             function getMousePos(evt) {
                 const rect = canvas.getBoundingClientRect();
@@ -446,7 +458,7 @@
             canvas.addEventListener('mousemove', scratch);
             window.addEventListener('mouseup', () => isDrawing = false);
             canvas.addEventListener('touchstart', (e) => { isDrawing = true; scratch(e); });
-            canvas.addEventListener('touchmove', scratch);
+            canvas.addEventListener('touchmove', scratch, {passive: false});
             window.addEventListener('touchend', () => isDrawing = false);
 
             // --- 3D Parallax Scrolling ---
@@ -464,7 +476,6 @@
                 particle.style.animationDuration = Math.random() * 8 + 6 + 's';
                 particle.style.animationDelay = Math.random() * 5 + 's';
                 
-                // Keep some in the body for the main content background
                 if(i < 15) {
                     introParticles.appendChild(particle);
                 } else {
@@ -597,9 +608,12 @@
                     introScreen.classList.add('fade-out');
                     setTimeout(() => {
                         introScreen.style.display = 'none';
-                        mainContent.classList.remove('hidden-initially');
+                        mainContent.classList.remove('hidden', 'hidden-initially');
                         mainContent.classList.add('fade-in');
                         
+                        // Initialize Scratch card dimensions NOW that the container is visible
+                        initScratchCard();
+
                         document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
                         setTimeout(startTypewriterSequence, 500);
 
@@ -642,7 +656,6 @@
                     tcIcon.classList.remove('ph-lock-key');
                     tcIcon.classList.add('ph-envelope-open');
                     confetti({ particleCount: 50, spread: 40, origin: { y: 0.9 } });
-                    // Here you could add logic to show a hidden text block or open a modal!
                     alert("Unlocked! (You can put her 21st birthday message here next year!)");
                 }
             });
