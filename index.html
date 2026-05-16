@@ -58,7 +58,9 @@
         
         /* Floating background particles (Parallax enabled via JS) */
         .dust {
-            position: absolute;
+            position: fixed;
+            top: 0;
+            pointer-events: none;
             background: rgba(125, 211, 252, 0.5); 
             border-radius: 50%;
             animation: float-up linear infinite;
@@ -147,8 +149,17 @@
         /* Parallax Columns */
         .parallax-col-1, .parallax-col-2 { will-change: transform; transition: transform 0.1s ease-out; }
 
-        .img-card { break-inside: avoid; margin-bottom: 1rem; position: relative; }
-        .img-card img { transition: transform 0.3s ease; }
+        .img-card { 
+            break-inside: avoid; margin-bottom: 1rem; position: relative; 
+            background: linear-gradient(90deg, #f0f9ff 0%, #e0f2fe 50%, #f0f9ff 100%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite linear;
+            border-radius: 0.75rem;
+            min-height: 150px; /* Placeholder height */
+        }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        
+        .img-card img { transition: transform 0.3s ease, opacity 0.7s ease; }
         .img-card:active img { transform: scale(0.98); }
         body.lightbox-open { overflow: hidden; }
     </style>
@@ -194,7 +205,7 @@
     </div>
 
     <!-- Main Content -->
-    <div id="main-content" class="min-h-screen pb-32 hidden-initially relative z-30 hidden">
+    <div id="main-content" class="min-h-screen pb-6 hidden-initially relative z-30 hidden">
         
         <header class="pt-20 pb-10 px-6 max-w-lg mx-auto text-center relative z-10">
             <p class="text-sky-500 text-xs font-medium tracking-[0.2em] uppercase mb-4 reveal">Happy Birthday</p>
@@ -209,48 +220,48 @@
             
             <div class="w-12 h-px bg-sky-300 mx-auto mb-6 reveal" style="transition-delay: 0.2s"></div>
 
-            <!-- Beautiful Visible Wish Message -->
-            <div class="mt-4 mb-2 flex flex-col items-center justify-center reveal" style="transition-delay: 0.4s">
+            <!-- Beautiful Visible Wish Message (Revealed by JS after Typewriter) -->
+            <div id="normal-wish" class="mt-4 mb-2 flex flex-col items-center justify-center opacity-0 translate-y-4 transition-all duration-1000 ease-out">
                 <p class="text-slate-600 text-sm leading-relaxed max-w-sm mx-auto">
                     Wishing you a year filled with endless joy, beautiful memories, and all the happiness you deserve. Have a wonderful day! 💙
                 </p>
             </div>
         </header>
 
-        <section class="px-4 max-w-2xl mx-auto relative z-10">
+        <section class="px-4 max-w-2xl mx-auto relative z-10 -mb-24">
             <!-- Split into two columns for Parallax logic -->
             <div class="flex gap-4 items-start">
                 
                 <!-- Left Column -->
                 <div class="flex-1 space-y-4 parallax-col-1">
                     <div class="img-card reveal cursor-pointer group" onclick="openLightbox('https://github.com/Lorheng/jannie/blob/main/IMG_4658.JPG?raw=true')">
-                        <div class="rounded-xl overflow-hidden shadow-sm bg-white relative">
+                        <div class="rounded-xl overflow-hidden shadow-sm bg-transparent relative">
                             <div class="absolute inset-0 bg-sky-900/0 group-active:bg-sky-900/10 transition-colors z-10"></div>
-                            <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4658.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover" loading="lazy">
+                            <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4658.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover opacity-0" onload="this.classList.remove('opacity-0')" loading="lazy">
                         </div>
                     </div>
                     <div class="img-card reveal cursor-pointer group" onclick="openLightbox('https://github.com/Lorheng/jannie/blob/main/IMG_4655.JPG?raw=true')">
-                        <div class="rounded-xl overflow-hidden shadow-sm bg-white relative">
+                        <div class="rounded-xl overflow-hidden shadow-sm bg-transparent relative">
                             <div class="absolute inset-0 bg-sky-900/0 group-active:bg-sky-900/10 transition-colors z-10"></div>
-                            <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4655.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover" loading="lazy">
+                            <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4655.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover opacity-0" onload="this.classList.remove('opacity-0')" loading="lazy">
                         </div>
                     </div>
                     <div class="img-card reveal cursor-pointer group" onclick="openLightbox('https://github.com/Lorheng/jannie/blob/main/IMG_4653.JPG?raw=true')">
-                        <div class="rounded-xl overflow-hidden shadow-sm bg-white relative">
+                        <div class="rounded-xl overflow-hidden shadow-sm bg-transparent relative">
                             <div class="absolute inset-0 bg-sky-900/0 group-active:bg-sky-900/10 transition-colors z-10"></div>
-                            <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4653.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover" loading="lazy">
+                            <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4653.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover opacity-0" onload="this.classList.remove('opacity-0')" loading="lazy">
                         </div>
                     </div>
                     <div class="img-card reveal cursor-pointer group" onclick="openLightbox('https://github.com/Lorheng/jannie/blob/main/IMG_4654.JPG?raw=true')">
-                        <div class="rounded-xl overflow-hidden shadow-sm bg-white relative">
+                        <div class="rounded-xl overflow-hidden shadow-sm bg-transparent relative">
                             <div class="absolute inset-0 bg-sky-900/0 group-active:bg-sky-900/10 transition-colors z-10"></div>
-                            <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4654.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover" loading="lazy">
+                            <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4654.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover opacity-0" onload="this.classList.remove('opacity-0')" loading="lazy">
                         </div>
                     </div>
                     <div class="img-card reveal cursor-pointer group" onclick="openLightbox('https://github.com/Lorheng/jannie/blob/main/IMG_4650.JPG?raw=true')">
-                        <div class="rounded-xl overflow-hidden shadow-sm bg-white relative">
+                        <div class="rounded-xl overflow-hidden shadow-sm bg-transparent relative">
                             <div class="absolute inset-0 bg-sky-900/0 group-active:bg-sky-900/10 transition-colors z-10"></div>
-                            <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4650.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover" loading="lazy">
+                            <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4650.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover opacity-0" onload="this.classList.remove('opacity-0')" loading="lazy">
                         </div>
                     </div>
                 </div>
@@ -258,40 +269,41 @@
                 <!-- Right Column -->
                 <div class="flex-1 space-y-4 parallax-col-2 mt-8">
                     <div class="img-card reveal cursor-pointer group" onclick="openLightbox('https://github.com/Lorheng/jannie/blob/main/IMG_4657.JPG?raw=true')">
-                        <div class="rounded-xl overflow-hidden shadow-sm bg-white relative">
+                        <div class="rounded-xl overflow-hidden shadow-sm bg-transparent relative">
                             <div class="absolute inset-0 bg-sky-900/0 group-active:bg-sky-900/10 transition-colors z-10"></div>
-                            <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4657.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover" loading="lazy">
+                            <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4657.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover opacity-0" onload="this.classList.remove('opacity-0')" loading="lazy">
                         </div>
                     </div>
                     <div class="img-card reveal cursor-pointer group" onclick="openLightbox('https://github.com/Lorheng/jannie/blob/main/IMG_4656.JPG?raw=true')">
-                        <div class="rounded-xl overflow-hidden shadow-sm bg-white relative">
+                        <div class="rounded-xl overflow-hidden shadow-sm bg-transparent relative">
                             <div class="absolute inset-0 bg-sky-900/0 group-active:bg-sky-900/10 transition-colors z-10"></div>
-                            <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4656.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover" loading="lazy">
+                            <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4656.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover opacity-0" onload="this.classList.remove('opacity-0')" loading="lazy">
                         </div>
                     </div>
                     <div class="img-card reveal cursor-pointer group" onclick="openLightbox('https://github.com/Lorheng/jannie/blob/main/IMG_4660.JPG?raw=true')">
-                        <div class="rounded-xl overflow-hidden shadow-sm bg-white relative">
+                        <div class="rounded-xl overflow-hidden shadow-sm bg-transparent relative">
                             <div class="absolute inset-0 bg-sky-900/0 group-active:bg-sky-900/10 transition-colors z-10"></div>
-                            <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4660.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover" loading="lazy">
+                            <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4660.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover opacity-0" onload="this.classList.remove('opacity-0')" loading="lazy">
                         </div>
                     </div>
                     <div class="img-card reveal cursor-pointer group" onclick="openLightbox('https://github.com/Lorheng/jannie/blob/main/IMG_4659.JPG?raw=true')">
-                        <div class="rounded-xl overflow-hidden shadow-sm bg-white relative">
+                        <div class="rounded-xl overflow-hidden shadow-sm bg-transparent relative">
                             <div class="absolute inset-0 bg-sky-900/0 group-active:bg-sky-900/10 transition-colors z-10"></div>
-                            <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4659.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover" loading="lazy">
+                            <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4659.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover opacity-0" onload="this.classList.remove('opacity-0')" loading="lazy">
                         </div>
                     </div>
                     <div class="img-card reveal cursor-pointer group" onclick="openLightbox('https://github.com/Lorheng/jannie/blob/main/Gemini_Generated_Image_ishjwnishjwnishj.png?raw=true')">
-                        <div class="rounded-xl overflow-hidden shadow-sm bg-white relative">
+                        <div class="rounded-xl overflow-hidden shadow-sm bg-transparent relative">
                             <div class="absolute inset-0 bg-sky-900/0 group-active:bg-sky-900/10 transition-colors z-10"></div>
-                            <img src="https://github.com/Lorheng/jannie/blob/main/Gemini_Generated_Image_ishjwnishjwnishj.png?raw=true" alt="Jannie" class="w-full h-auto object-cover" loading="lazy">
+                            <img src="https://github.com/Lorheng/jannie/blob/main/Gemini_Generated_Image_ishjwnishjwnishj.png?raw=true" alt="Jannie" class="w-full h-auto object-cover opacity-0" onload="this.classList.remove('opacity-0')" loading="lazy">
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <div class="text-center mt-20 mb-12 px-6 flex flex-col items-center justify-center relative z-10">
+        <!-- Reduced top margin to swallow parallax empty space -->
+        <div class="text-center mt-0 mb-8 px-6 flex flex-col items-center justify-center relative z-10">
             
             <!-- The Scratch-Off Message Card -->
             <div class="mb-12 relative w-full max-w-[320px] mx-auto h-32 rounded-2xl shadow-sm border border-sky-100 flex items-center justify-center overflow-hidden bg-white reveal">
@@ -305,23 +317,23 @@
                 <canvas id="scratch-canvas" class="absolute inset-0 w-full h-full z-10 cursor-pointer"></canvas>
             </div>
 
-            <!-- Time Capsule -->
-            <div id="time-capsule" class="mb-16 bg-white/50 backdrop-blur-md border border-slate-200/60 rounded-2xl p-6 w-full max-w-[260px] mx-auto text-center cursor-pointer select-none transition-all duration-300 hover:bg-white/80 active:scale-95 reveal">
-                <i class="ph-fill ph-lock-key text-3xl text-slate-400 mb-2 transition-colors duration-300" id="tc-icon"></i>
-                <h3 class="font-serif-elegant text-lg text-slate-700">A letter for your 21st</h3>
-                <p class="text-xs text-slate-500 mt-1 font-medium tracking-wide">Locked until May 16, 2027</p>
-            </div>
-
             <!-- Make a wish button -->
-            <button id="wish-btn" class="relative group px-8 py-4 bg-white border border-sky-200 rounded-full shadow-sm hover:shadow-md hover:border-sky-300 active:scale-95 transition-all duration-300 overflow-hidden reveal">
+            <button id="wish-btn" class="mb-16 relative group px-8 py-4 bg-white border border-sky-200 rounded-full shadow-sm hover:shadow-md hover:border-sky-300 active:scale-95 transition-all duration-300 overflow-hidden reveal">
                 <div class="absolute inset-0 bg-sky-50 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-500"></div>
                 <span class="relative z-10 flex items-center gap-2 text-sky-600 font-medium tracking-wide">
                     <i class="ph-fill ph-magic-wand text-xl"></i> Make a wish...
                 </span>
             </button>
 
+            <!-- Time Capsule -->
+            <div id="time-capsule" class="mb-8 bg-white/50 backdrop-blur-md border border-slate-200/60 rounded-2xl p-6 w-full max-w-[260px] mx-auto text-center cursor-pointer select-none transition-all duration-300 hover:bg-white/80 active:scale-95 reveal">
+                <i class="ph-fill ph-lock-key text-3xl text-slate-400 mb-2 transition-colors duration-300" id="tc-icon"></i>
+                <h3 class="font-serif-elegant text-lg text-slate-700">A letter for your 21st</h3>
+                <p class="text-xs text-slate-500 mt-1 font-medium tracking-wide">Locked until May 16, 2027</p>
+            </div>
+
             <!-- Sender Name -->
-            <p class="mt-16 text-slate-400 text-sm tracking-widest font-light reveal">by Ch...li</p>
+            <p class="mt-8 text-slate-400 text-sm tracking-widest font-light reveal">by Ch...li</p>
         </div>
     </div>
 
@@ -554,6 +566,15 @@
                 await new Promise(r => setTimeout(r, 600)); // Dramatic pause
                 await typeText(twLine4, "(Kimleng)", 100); 
                 twLine4.classList.add('type-cursor'); 
+                
+                // Reveal normal wish smoothly after typing finishes
+                await new Promise(r => setTimeout(r, 600)); 
+                const normalWish = document.getElementById('normal-wish');
+                normalWish.classList.remove('opacity-0', 'translate-y-4');
+
+                // Reveal the images and bottom content ONLY after the wish is visible
+                await new Promise(r => setTimeout(r, 800)); 
+                document.querySelectorAll('.reveal:not(.active)').forEach(el => revealObserver.observe(el));
             }
 
             // --- Audio Logic (Fading & Interaction) ---
@@ -587,11 +608,46 @@
                 }).catch(e => console.log("Audio autoplay prevented"));
             }
 
+            // --- Sound Effect Synthesis ---
+            function playUnsealSound() {
+                try {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    if (!AudioContext) return;
+                    const audioCtx = new AudioContext();
+                    
+                    // Resume audio context if suspended (fixes iOS Safari silence)
+                    if (audioCtx.state === 'suspended') {
+                        audioCtx.resume();
+                    }
+                    
+                    const osc = audioCtx.createOscillator();
+                    const gainNode = audioCtx.createGain();
+                    
+                    osc.type = 'triangle'; // Brighter, cleaner sound
+                    osc.frequency.setValueAtTime(500, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.15);
+                    
+                    gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+                    gainNode.gain.linearRampToValueAtTime(0.5, audioCtx.currentTime + 0.05); // Louder
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+                    
+                    osc.connect(gainNode);
+                    gainNode.connect(audioCtx.destination);
+                    
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.4);
+                } catch(e) { console.log("Audio API not supported", e); }
+            }
+
             // --- Envelope Opening ---
             let isOpening = false;
             envelopeWrapper.addEventListener('click', () => {
                 if (isOpening) return;
                 isOpening = true;
+
+                // Vibrate and play sound
+                if (navigator.vibrate) navigator.vibrate([50, 100, 50]);
+                playUnsealSound();
 
                 envSeal.classList.add('seal-break');
                 instructionText.style.opacity = '0';
@@ -614,7 +670,9 @@
                         // Initialize Scratch card dimensions NOW that the container is visible
                         initScratchCard();
 
-                        document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+                        // ONLY observe the header elements initially (Happy Birthday text & line)
+                        document.querySelectorAll('header .reveal').forEach(el => revealObserver.observe(el));
+                        
                         setTimeout(startTypewriterSequence, 500);
 
                         setTimeout(() => { 
