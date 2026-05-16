@@ -228,10 +228,10 @@
             </div>
         </header>
 
-        <!-- Slightly reduced negative margin to prevent eating into the footer -->
-        <section class="px-4 max-w-2xl mx-auto relative z-10 -mb-4">
+        <!-- Aggressive negative margin added (-mb-32) to counteract the empty parallax space -->
+        <section class="px-2 max-w-2xl mx-auto relative z-10 pb-0 -mb-32">
             <!-- Split into two columns for Parallax logic -->
-            <div class="flex gap-4 items-start">
+            <div class="flex gap-2 items-start">
                 
                 <!-- Left Column -->
                 <div class="flex-1 space-y-4 parallax-col-1">
@@ -310,8 +310,8 @@
             </div>
         </section>
 
-        <!-- Added pb-20 to ensure spacing above iOS Safari bottom bar -->
-        <div class="text-center mt-8 mb-8 px-6 flex flex-col items-center justify-center relative z-10 pb-20">
+        <!-- Aggressive negative top margin (-mt-16) to pull this container into the swallowed space -->
+        <div class="text-center -mt-16 mb-8 px-6 flex flex-col items-center justify-center relative z-10 pb-20">
             
             <!-- The Scratch-Off Message Card -->
             <div class="mb-12 relative w-full max-w-[320px] mx-auto h-32 rounded-2xl shadow-sm border border-sky-100 flex items-center justify-center overflow-hidden bg-white reveal">
