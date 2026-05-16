@@ -2,385 +2,255 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Happy Birthday!</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Jannie</title>
+    
+    <!-- Fonts: Inter for clean text, Playfair Display for elegant headings -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
-    
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    
-    <!-- Canvas Confetti -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
         body {
-            font-family: 'Montserrat', sans-serif;
-            margin: 0;
-            overflow-x: hidden;
-            background-color: #0f172a;
-            color: white;
+            font-family: 'Inter', sans-serif;
+            background-color: #FAFAF9; /* warm off-white (tailwind stone-50) */
+            color: #292524; /* dark stone for soft contrast */
             -webkit-tap-highlight-color: transparent;
         }
-
-        .font-cursive {
-            font-family: 'Great Vibes', cursive;
-        }
-
-        /* Animated Gradient Background */
-        .bg-animated {
-            background: linear-gradient(-45deg, #0f172a, #1e1b4b, #312e81, #1e1b4b);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
-        }
-
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* Floating particles */
-        .particle {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.5);
-            border-radius: 50%;
-            pointer-events: none;
-            animation: floatUp linear infinite;
-        }
-
-        @keyframes floatUp {
-            0% { transform: translateY(100vh) scale(0); opacity: 0; }
-            20% { opacity: 1; }
-            80% { opacity: 1; }
-            100% { transform: translateY(-10vh) scale(1); opacity: 0; }
-        }
-
-        /* Polaroid Gallery Styles */
-        .gallery-container {
-            display: flex;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-            scrollbar-width: none; /* Firefox */
-            -ms-overflow-style: none;  /* IE and Edge */
-            padding: 2rem 1.5rem;
-            gap: 1.5rem;
-        }
         
-        .gallery-container::-webkit-scrollbar {
-            display: none; /* Chrome, Safari and Opera */
+        h1, h2, .font-serif-elegant {
+            font-family: 'Playfair Display', serif;
         }
 
-        .polaroid {
-            flex: 0 0 80%; /* Takes up 80% of mobile screen */
-            scroll-snap-align: center;
-            background: white;
-            padding: 12px 12px 40px 12px;
-            border-radius: 4px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            transform: rotate(-2deg);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            position: relative;
-        }
-
-        .polaroid:nth-child(even) {
-            transform: rotate(3deg);
-        }
-
-        .polaroid.active {
-            transform: scale(1.05) rotate(0deg);
-            z-index: 10;
-            box-shadow: 0 15px 35px rgba(255, 255, 255, 0.15);
-        }
-
-        .polaroid img {
-            width: 100%;
-            height: 300px;
-            object-fit: cover;
-            border-radius: 2px;
-            background-color: #eee;
-        }
-
-        .polaroid-caption {
-            position: absolute;
-            bottom: 10px;
-            left: 0;
-            width: 100%;
-            text-align: center;
-            color: #333;
-            font-family: 'Great Vibes', cursive;
-            font-size: 1.5rem;
-        }
-
-        /* Intro Screen Transition */
-        #intro-screen {
-            transition: opacity 0.8s ease, transform 0.8s ease;
-        }
-        
-        .hidden-fade {
+        /* Smooth fade transitions */
+        .fade-out {
             opacity: 0;
             pointer-events: none;
-            transform: scale(1.1);
+            transition: opacity 0.8s ease-out;
+        }
+        
+        .fade-in {
+            opacity: 1 !important;
+            transform: translateY(0) !important;
         }
 
-        /* Glassmorphism for player */
-        .glass-player {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        /* Clean Glassmorphism for the player */
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-top: 1px solid rgba(0,0,0,0.05);
         }
 
-        /* Glowing text effect */
-        .text-glow {
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        /* Initial state for main content */
+        #main-content {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+        }
+
+        /* Image hover effects */
+        .img-card {
+            break-inside: avoid;
+            margin-bottom: 1rem;
+        }
+        .img-card img {
+            transition: transform 0.5s ease;
+        }
+        .img-card:hover img {
+            transform: scale(1.02);
         }
     </style>
 </head>
-<body class="bg-animated relative h-screen w-screen overflow-hidden text-slate-100 flex flex-col items-center justify-center">
+<body class="antialiased selection:bg-stone-200">
 
-    <!-- Background Particles Container -->
-    <div id="particles-container" class="absolute inset-0 z-0 overflow-hidden pointer-events-none"></div>
-
-    <!-- Intro Screen (Required to initiate Audio) -->
-    <div id="intro-screen" class="absolute inset-0 z-50 flex flex-col items-center justify-center bg-slate-900/90 backdrop-blur-md">
-        <div class="text-center px-6">
-            <i class="ph-fill ph-gift text-7xl text-pink-400 mb-6 animate-bounce"></i>
-            <h1 class="font-cursive text-5xl mb-4 text-pink-300">Happy Birthday, Jannie!</h1>
-            <p class="text-slate-300 mb-8 text-sm tracking-widest uppercase">Make sure your volume is up</p>
-            <button id="open-btn" class="bg-pink-500 hover:bg-pink-600 text-white font-semibold py-3 px-8 rounded-full shadow-[0_0_20px_rgba(236,72,153,0.5)] transition-all transform hover:scale-105 active:scale-95">
-                Tap to Open
-            </button>
+    <!-- Intro Screen (For Audio Permission) -->
+    <div id="intro-screen" class="fixed inset-0 z-50 bg-stone-100 flex flex-col items-center justify-center p-6 text-center">
+        <div class="mb-8">
+            <i class="ph-light ph-envelope-simple-open text-5xl text-stone-400 mb-4 inline-block"></i>
+            <h1 class="font-serif-elegant text-3xl mb-2 text-stone-800">For Jannie</h1>
+            <p class="text-stone-500 text-sm uppercase tracking-widest">May 16</p>
         </div>
+        <button id="start-btn" class="px-8 py-3 bg-stone-800 text-stone-50 rounded-full hover:bg-stone-700 transition-colors shadow-lg active:scale-95 flex items-center gap-2">
+            <span>Tap to open</span>
+            <i class="ph ph-arrow-right"></i>
+        </button>
     </div>
 
-    <!-- Main Content (Hidden initially via z-index and opacity after JS triggers) -->
-    <div id="main-content" class="absolute inset-0 z-10 flex flex-col h-full w-full overflow-y-auto pb-24 opacity-0 transition-opacity duration-1000">
+    <!-- Main Content -->
+    <div id="main-content" class="min-h-screen pb-32">
         
-        <!-- Header Section -->
-        <header class="text-center pt-16 pb-8 px-6 relative z-10">
-            <p class="text-sm tracking-[0.2em] text-pink-300 uppercase mb-2">May 16</p>
-            <h1 class="font-cursive text-6xl md:text-7xl text-white text-glow mb-4 leading-tight">
-                Happy Birthday,<br>Jannie!
+        <!-- Header / Greeting Section -->
+        <header class="pt-20 pb-12 px-6 max-w-lg mx-auto text-center">
+            <p class="text-stone-400 text-xs font-medium tracking-[0.2em] uppercase mb-4">Happy Birthday</p>
+            <h1 class="text-5xl font-serif-elegant text-stone-800 mb-6 leading-tight">
+                Welcome to<br>the 20s life,<br>
+                <span class="italic text-stone-600">Jannie.</span>
             </h1>
-            <p class="text-slate-300 text-sm md:text-base max-w-md mx-auto leading-relaxed mt-4">
-                Today is all about you! Wishing you the absolute best on your special day. Here is a little walk down memory lane to celebrate how awesome you are.
+            
+            <div class="w-12 h-px bg-stone-300 mx-auto mb-8"></div>
+            
+            <p class="text-stone-600 text-base leading-relaxed px-4">
+                Wishing you a wonderful year ahead filled with joy, growth, and amazing memories. May this new chapter bring you happiness and all the simple things that make life beautiful. Have the best day!
             </p>
         </header>
 
-        <!-- Gallery Section -->
-        <div class="relative w-full z-10 my-4">
-            <div class="flex items-center justify-center mb-2">
-                <i class="ph ph-arrows-left-right text-pink-400 mr-2 animate-pulse"></i>
-                <span class="text-xs text-pink-300 uppercase tracking-widest">Swipe to explore</span>
+        <!-- Photo Gallery (Masonry Grid) -->
+        <section class="px-4 max-w-2xl mx-auto">
+            <!-- Tailwind CSS Columns for pure CSS masonry -->
+            <div class="columns-2 gap-4 space-y-4">
+                <!-- Image 1 -->
+                <div class="img-card rounded-xl overflow-hidden shadow-sm bg-white">
+                    <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4658.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover" loading="lazy">
+                </div>
+                <!-- Image 2 -->
+                <div class="img-card rounded-xl overflow-hidden shadow-sm bg-white">
+                    <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4657.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover" loading="lazy">
+                </div>
+                <!-- Image 3 -->
+                <div class="img-card rounded-xl overflow-hidden shadow-sm bg-white">
+                    <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4655.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover" loading="lazy">
+                </div>
+                <!-- Image 4 -->
+                <div class="img-card rounded-xl overflow-hidden shadow-sm bg-white">
+                    <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4656.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover" loading="lazy">
+                </div>
+                <!-- Image 5 -->
+                <div class="img-card rounded-xl overflow-hidden shadow-sm bg-white">
+                    <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4653.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover" loading="lazy">
+                </div>
+                <!-- Image 6 -->
+                <div class="img-card rounded-xl overflow-hidden shadow-sm bg-white">
+                    <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4660.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover" loading="lazy">
+                </div>
+                <!-- Image 7 -->
+                <div class="img-card rounded-xl overflow-hidden shadow-sm bg-white">
+                    <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4654.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover" loading="lazy">
+                </div>
+                <!-- Image 8 -->
+                <div class="img-card rounded-xl overflow-hidden shadow-sm bg-white">
+                    <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4659.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover" loading="lazy">
+                </div>
+                <!-- Image 9 -->
+                <div class="img-card rounded-xl overflow-hidden shadow-sm bg-white">
+                    <img src="https://github.com/Lorheng/jannie/blob/main/IMG_4650.JPG?raw=true" alt="Jannie" class="w-full h-auto object-cover" loading="lazy">
+                </div>
+                <!-- Image 10 -->
+                <div class="img-card rounded-xl overflow-hidden shadow-sm bg-white">
+                    <img src="https://github.com/Lorheng/jannie/blob/main/Gemini_Generated_Image_ishjwnishjwnishj.png?raw=true" alt="Jannie" class="w-full h-auto object-cover" loading="lazy">
+                </div>
             </div>
-            
-            <div class="gallery-container" id="gallery">
-                <!-- Replace src with your real images! -->
-                <div class="polaroid">
-                    <img src="https://images.unsplash.com/photo-1518133910546-b6c2fb7d79e3?q=80&w=600&auto=format&fit=crop" alt="Memory 1">
-                    <div class="polaroid-caption">Great Times</div>
-                </div>
-                <div class="polaroid">
-                    <img src="https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?q=80&w=600&auto=format&fit=crop" alt="Memory 2">
-                    <div class="polaroid-caption">Fun Memories</div>
-                </div>
-                <div class="polaroid">
-                    <img src="https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=600&auto=format&fit=crop" alt="Memory 3">
-                    <div class="polaroid-caption">Smiles All Around</div>
-                </div>
-                <div class="polaroid">
-                    <img src="https://images.unsplash.com/photo-1501901609772-df0848060b33?q=80&w=600&auto=format&fit=crop" alt="Memory 4">
-                    <div class="polaroid-caption">Cheers to You!</div>
-                </div>
-            </div>
-        </div>
+        </section>
 
-        <!-- Footer / Closing Message -->
-        <div class="text-center px-6 mt-8 mb-12 relative z-10">
-            <i class="ph-fill ph-star text-3xl text-pink-500 mb-4 inline-block"></i>
-            <h2 class="font-cursive text-4xl text-white mb-4">Have the best day ever!</h2>
-            <p class="text-slate-400 text-xs uppercase tracking-widest">Happy Birthday Jannie</p>
+        <div class="text-center mt-16 mb-8 text-stone-400">
+            <i class="ph-fill ph-heart text-xl"></i>
         </div>
     </div>
 
-    <!-- Hidden Audio Element -->
-    <!-- IMPORTANT: When you have the real song, change the src below to your local file (e.g., src="about-you.mp3") -->
-    <audio id="bg-music" loop preload="auto" crossorigin="anonymous">
-        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-17.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
+    <!-- Audio Element -->
+    <audio id="bg-audio" preload="auto" crossorigin="anonymous">
+        <source src="https://raw.githubusercontent.com/Lorheng/jannie/main/About%20You-The%201975.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- Floating Music Player (Bottom fixed) -->
-    <div id="music-player" class="fixed bottom-0 left-0 w-full glass-player px-6 py-4 flex items-center justify-between z-40 transform translate-y-full transition-transform duration-700">
-        <div class="flex items-center gap-4">
-            <div class="relative w-12 h-12 rounded-full overflow-hidden bg-slate-800 shadow-[0_0_15px_rgba(255,255,255,0.2)] animate-[spin_10s_linear_infinite]" id="record-disk">
-                <!-- Album cover placeholder -->
-                <img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=200&auto=format&fit=crop" class="w-full h-full object-cover opacity-80" alt="Album Art">
-                <div class="absolute inset-0 m-auto w-3 h-3 bg-black rounded-full border border-slate-700"></div>
+    <!-- Floating Minimalist Player -->
+    <div id="music-player" class="fixed bottom-0 left-0 w-full glass-nav px-6 py-4 flex items-center justify-between z-40 transform translate-y-full transition-transform duration-700">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-stone-200 flex items-center justify-center overflow-hidden">
+                <i class="ph ph-music-notes text-stone-500 text-lg"></i>
             </div>
-            <div class="flex flex-col">
-                <span class="text-white font-semibold text-sm">About You</span>
-                <span class="text-pink-300 text-xs">The 1975</span>
+            <div>
+                <p class="text-sm font-medium text-stone-800">About You</p>
+                <p class="text-xs text-stone-500">The 1975</p>
             </div>
         </div>
         
-        <button id="play-pause-btn" class="w-12 h-12 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full transition-colors text-white">
-            <i class="ph-fill ph-pause text-2xl" id="play-icon"></i>
+        <button id="play-pause-btn" class="w-12 h-12 flex items-center justify-center bg-stone-800 hover:bg-stone-700 rounded-full transition-colors text-white shadow-md active:scale-95">
+            <i class="ph-fill ph-play text-xl" id="play-icon"></i>
         </button>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             
-            // Elements
+            // DOM Elements
             const introScreen = document.getElementById('intro-screen');
             const mainContent = document.getElementById('main-content');
-            const openBtn = document.getElementById('open-btn');
-            const bgMusic = document.getElementById('bg-music');
+            const startBtn = document.getElementById('start-btn');
             const musicPlayer = document.getElementById('music-player');
             const playPauseBtn = document.getElementById('play-pause-btn');
             const playIcon = document.getElementById('play-icon');
-            const recordDisk = document.getElementById('record-disk');
-            const gallery = document.getElementById('gallery');
-            const polaroids = document.querySelectorAll('.polaroid');
+            const bgAudio = document.getElementById('bg-audio');
 
             let isPlaying = false;
 
-            // --- 1. Background Particles ---
-            const particlesContainer = document.getElementById('particles-container');
-            const particleCount = 30;
-
-            for (let i = 0; i < particleCount; i++) {
-                createParticle();
-            }
-
-            function createParticle() {
-                const particle = document.createElement('div');
-                particle.classList.add('particle');
+            // --- Intro & Audio Start Logic ---
+            startBtn.addEventListener('click', () => {
+                // Fade out intro
+                introScreen.classList.add('fade-out');
                 
-                // Randomize properties
-                const size = Math.random() * 4 + 2; // 2px to 6px
-                const left = Math.random() * 100; // 0% to 100%
-                const duration = Math.random() * 10 + 10; // 10s to 20s
-                const delay = Math.random() * 10; // 0s to 10s
-
-                particle.style.width = `${size}px`;
-                particle.style.height = `${size}px`;
-                particle.style.left = `${left}vw`;
-                particle.style.animationDuration = `${duration}s`;
-                particle.style.animationDelay = `${delay}s`;
-
-                particlesContainer.appendChild(particle);
-            }
-
-            // --- 2. Open Interaction (Confetti & Audio) ---
-            openBtn.addEventListener('click', () => {
-                // Trigger Confetti
-                confetti({
-                    particleCount: 150,
-                    spread: 80,
-                    origin: { y: 0.6 },
-                    colors: ['#fce7f3', '#fbcfe8', '#f9a8d4', '#f472b6', '#ffffff']
-                });
-
-                // Hide Intro
-                introScreen.classList.add('hidden-fade');
+                // Show main content
                 setTimeout(() => {
                     introScreen.style.display = 'none';
-                }, 800);
+                    mainContent.classList.add('fade-in');
+                }, 800); // Wait for fade out
 
-                // Show Main Content
-                mainContent.classList.remove('opacity-0');
-                mainContent.classList.add('opacity-100');
-
-                // Show Music Player
+                // Slide up player
                 setTimeout(() => {
                     musicPlayer.classList.remove('translate-y-full');
-                }, 500);
+                }, 1000);
 
-                // Play Music
+                // Setup and Play Audio from 23 seconds
+                bgAudio.currentTime = 23;
                 playAudio();
             });
 
-            // --- 3. Audio Controls ---
+            // --- Audio Controls & UI Updates ---
             function playAudio() {
-                bgMusic.volume = 0.5; // Set soft volume
-                bgMusic.play().then(() => {
+                bgAudio.play().then(() => {
                     isPlaying = true;
-                    updatePlayerUI();
-                }).catch(err => {
-                    console.log("Autoplay prevented:", err);
-                    isPlaying = false;
-                    updatePlayerUI();
+                    updateIcon();
+                }).catch(error => {
+                    console.log("Autoplay blocked or audio failed to load:", error);
                 });
             }
 
-            function updatePlayerUI() {
+            function updateIcon() {
                 if (isPlaying) {
                     playIcon.classList.remove('ph-play');
                     playIcon.classList.add('ph-pause');
-                    recordDisk.style.animationPlayState = 'running';
                 } else {
                     playIcon.classList.remove('ph-pause');
                     playIcon.classList.add('ph-play');
-                    recordDisk.style.animationPlayState = 'paused';
                 }
             }
 
+            // Play/Pause Button Toggle
             playPauseBtn.addEventListener('click', () => {
                 if (isPlaying) {
-                    bgMusic.pause();
+                    bgAudio.pause();
                     isPlaying = false;
                 } else {
-                    bgMusic.play();
+                    bgAudio.play();
                     isPlaying = true;
                 }
-                updatePlayerUI();
+                updateIcon();
             });
 
-            // --- 4. Interactive Gallery (Highlight center item) ---
-            // Simple logic to add 'active' class to the polaroid closest to the center
-            gallery.addEventListener('scroll', () => {
-                let closest = null;
-                let minDistance = Infinity;
-                const containerCenter = gallery.offsetWidth / 2;
-
-                polaroids.forEach(p => {
-                    // Calculate distance from center of viewport to center of element
-                    const rect = p.getBoundingClientRect();
-                    const pCenter = rect.left + rect.width / 2;
-                    const distance = Math.abs(containerCenter - pCenter);
-
-                    p.classList.remove('active');
-
-                    if (distance < minDistance) {
-                        minDistance = distance;
-                        closest = p;
-                    }
-                });
-
-                if (closest && minDistance < gallery.offsetWidth / 3) {
-                    closest.classList.add('active');
-                }
+            // Handle track ending (optional: loop it)
+            bgAudio.addEventListener('ended', () => {
+                bgAudio.currentTime = 0; // Or reset to 23s if you want it to loop from that specific point!
+                bgAudio.play();
             });
-
-            // Trigger scroll event once to highlight initial center
-            setTimeout(() => {
-                gallery.dispatchEvent(new Event('scroll'));
-            }, 1000); // Wait for animations to finish
             
-            // Allow tapping a polaroid to center it
-            polaroids.forEach(p => {
-                p.addEventListener('click', () => {
-                    p.scrollIntoView({ behavior: 'smooth', inline: 'center' });
-                });
-            });
-
+            // Ensure UI stays synced if audio pauses/plays unexpectedly
+            bgAudio.addEventListener('pause', () => { isPlaying = false; updateIcon(); });
+            bgAudio.addEventListener('play', () => { isPlaying = true; updateIcon(); });
         });
     </script>
 </body>
