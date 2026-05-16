@@ -19,13 +19,37 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #FAFAF9; /* warm off-white (tailwind stone-50) */
-            color: #292524; /* dark stone for soft contrast */
+            background-color: #F0F9FF; /* sky-50 for a light blue tint */
+            color: #334155; /* slate-700 */
             -webkit-tap-highlight-color: transparent;
         }
         
         h1, h2, .font-serif-elegant {
             font-family: 'Playfair Display', serif;
+        }
+
+        /* Envelope Animations & Intro Styles */
+        .rotate-x-180 {
+            transform: rotateX(180deg);
+        }
+        .letter-pull {
+            transform: translateY(-90px);
+        }
+        .seal-break {
+            transform: translate(-50%, -50%) scale(1.5) !important;
+            opacity: 0;
+        }
+        .dust {
+            position: absolute;
+            background: rgba(125, 211, 252, 0.4); /* sky-300 with low opacity */
+            border-radius: 50%;
+            animation: float-up linear infinite;
+        }
+        @keyframes float-up {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { transform: translateY(-10vh) scale(1); opacity: 0; }
         }
 
         /* Smooth fade transitions */
@@ -68,19 +92,52 @@
         }
     </style>
 </head>
-<body class="antialiased selection:bg-stone-200">
+<body class="antialiased selection:bg-sky-200">
 
-    <!-- Intro Screen (For Audio Permission) -->
-    <div id="intro-screen" class="fixed inset-0 z-50 bg-stone-100 flex flex-col items-center justify-center p-6 text-center">
-        <div class="mb-8">
-            <i class="ph-light ph-envelope-simple-open text-5xl text-stone-400 mb-4 inline-block"></i>
-            <h1 class="font-serif-elegant text-3xl mb-2 text-stone-800">For Jannie</h1>
-            <p class="text-stone-500 text-sm uppercase tracking-widest">May 16</p>
+    <!-- Interactive Envelope Intro Screen -->
+    <div id="intro-screen" class="fixed inset-0 z-50 bg-[#F0F9FF] flex flex-col items-center justify-center p-6 overflow-hidden">
+        
+        <!-- Floating Particles Container -->
+        <div id="intro-particles" class="absolute inset-0 pointer-events-none"></div>
+
+        <!-- Greeting Text -->
+        <div class="text-center mb-16 z-10 transition-opacity duration-500" id="intro-text">
+            <p class="text-sky-500 text-xs tracking-[0.3em] uppercase mb-3">May 16</p>
+            <h1 class="font-serif-elegant text-3xl text-slate-800">A special delivery</h1>
         </div>
-        <button id="start-btn" class="px-8 py-3 bg-stone-800 text-stone-50 rounded-full hover:bg-stone-700 transition-colors shadow-lg active:scale-95 flex items-center gap-2">
-            <span>Tap to open</span>
-            <i class="ph ph-arrow-right"></i>
-        </button>
+
+        <!-- Envelope Structure -->
+        <div id="envelope-wrapper" class="relative w-80 h-52 cursor-pointer z-10 transition-transform duration-300 hover:scale-[1.02] active:scale-95">
+            
+            <!-- Envelope Back (Darkest inside) -->
+            <div class="absolute inset-0 bg-sky-400 rounded-lg shadow-md"></div>
+            
+            <!-- The Letter -->
+            <div id="env-letter" class="absolute left-3 right-3 top-3 bottom-3 bg-white rounded-md flex flex-col items-center justify-center z-10 transition-transform duration-700 ease-in-out shadow-sm border border-sky-100">
+                <i class="ph-light ph-sparkle text-2xl text-sky-300 mb-2"></i>
+                <h2 class="font-serif-elegant text-2xl text-slate-800">For Jannie</h2>
+            </div>
+
+            <!-- Envelope Front Flaps -->
+            <div class="absolute inset-0 z-20 pointer-events-none rounded-lg overflow-hidden">
+                <!-- Left Flap -->
+                <div class="absolute top-0 left-0 w-1/2 h-full bg-sky-200 shadow-[2px_0_5px_rgba(0,0,0,0.05)]" style="clip-path: polygon(0 0, 100% 50%, 0 100%);"></div>
+                <!-- Right Flap -->
+                <div class="absolute top-0 right-0 w-1/2 h-full bg-sky-200 shadow-[-2px_0_5px_rgba(0,0,0,0.05)]" style="clip-path: polygon(100% 0, 0 50%, 100% 100%);"></div>
+                <!-- Bottom Flap -->
+                <div class="absolute bottom-0 left-0 w-full h-[60%] bg-sky-100 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]" style="clip-path: polygon(0 100%, 50% 0, 100% 100%);"></div>
+            </div>
+
+            <!-- Top Flap (Animated opening) -->
+            <div id="env-flap" class="absolute top-0 left-0 w-full h-[60%] bg-sky-300 z-30 origin-top transition-transform duration-700 ease-in-out drop-shadow-[0_3px_5px_rgba(0,0,0,0.1)]" style="clip-path: polygon(0 0, 100% 0, 50% 100%);"></div>
+
+            <!-- Interactive Wax Seal -->
+            <div id="env-seal" class="absolute top-[125px] left-1/2 -translate-x-1/2 -translate-y-1/2 w-14 h-14 bg-sky-500 rounded-full flex items-center justify-center z-40 transition-all duration-500 shadow-lg border-2 border-sky-400">
+                <i class="ph-fill ph-star text-white text-xl animate-pulse"></i>
+            </div>
+        </div>
+
+        <p id="instruction-text" class="mt-16 text-sky-500 text-sm z-10 tracking-wide transition-opacity duration-500">Tap the seal to open</p>
     </div>
 
     <!-- Main Content -->
@@ -88,15 +145,15 @@
         
         <!-- Header / Greeting Section -->
         <header class="pt-20 pb-12 px-6 max-w-lg mx-auto text-center">
-            <p class="text-stone-400 text-xs font-medium tracking-[0.2em] uppercase mb-4">Happy Birthday</p>
-            <h1 class="text-5xl font-serif-elegant text-stone-800 mb-6 leading-tight">
+            <p class="text-sky-500 text-xs font-medium tracking-[0.2em] uppercase mb-4">Happy Birthday</p>
+            <h1 class="text-5xl font-serif-elegant text-slate-800 mb-6 leading-tight">
                 Welcome to<br>the 20s life,<br>
-                <span class="italic text-stone-600">Jannie.</span>
+                <span class="italic text-slate-600">Jannie.</span>
             </h1>
             
-            <div class="w-12 h-px bg-stone-300 mx-auto mb-8"></div>
+            <div class="w-12 h-px bg-sky-300 mx-auto mb-8"></div>
             
-            <p class="text-stone-600 text-base leading-relaxed px-4">
+            <p class="text-slate-600 text-base leading-relaxed px-4">
                 Wishing you a wonderful year ahead filled with joy, growth, and amazing memories. May this new chapter bring you happiness and all the simple things that make life beautiful. Have the best day!
             </p>
         </header>
@@ -148,8 +205,8 @@
             </div>
         </section>
 
-        <div class="text-center mt-16 mb-8 text-stone-400">
-            <i class="ph-fill ph-heart text-xl"></i>
+        <div class="text-center mt-16 mb-8 text-sky-400">
+            <i class="ph-fill ph-star text-xl"></i>
         </div>
     </div>
 
@@ -161,16 +218,16 @@
     <!-- Floating Minimalist Player -->
     <div id="music-player" class="fixed bottom-0 left-0 w-full glass-nav px-6 py-4 flex items-center justify-between z-40 transform translate-y-full transition-transform duration-700">
         <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full bg-stone-200 flex items-center justify-center overflow-hidden">
-                <i class="ph ph-music-notes text-stone-500 text-lg"></i>
+            <div class="w-10 h-10 rounded-full bg-sky-100 flex items-center justify-center overflow-hidden">
+                <i class="ph ph-music-notes text-sky-600 text-lg"></i>
             </div>
             <div>
-                <p class="text-sm font-medium text-stone-800">About You</p>
-                <p class="text-xs text-stone-500">The 1975</p>
+                <p class="text-sm font-medium text-slate-800">About You</p>
+                <p class="text-xs text-slate-500">The 1975</p>
             </div>
         </div>
         
-        <button id="play-pause-btn" class="w-12 h-12 flex items-center justify-center bg-stone-800 hover:bg-stone-700 rounded-full transition-colors text-white shadow-md active:scale-95">
+        <button id="play-pause-btn" class="w-12 h-12 flex items-center justify-center bg-sky-500 hover:bg-sky-600 rounded-full transition-colors text-white shadow-md active:scale-95">
             <i class="ph-fill ph-play text-xl" id="play-icon"></i>
         </button>
     </div>
@@ -178,37 +235,24 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             
-            // DOM Elements
+            // Elements
             const introScreen = document.getElementById('intro-screen');
             const mainContent = document.getElementById('main-content');
-            const startBtn = document.getElementById('start-btn');
+            
+            // Envelope Elements
+            const envelopeWrapper = document.getElementById('envelope-wrapper');
+            const envFlap = document.getElementById('env-flap');
+            const envSeal = document.getElementById('env-seal');
+            const envLetter = document.getElementById('env-letter');
+            const instructionText = document.getElementById('instruction-text');
+            const introParticles = document.getElementById('intro-particles');
+
             const musicPlayer = document.getElementById('music-player');
             const playPauseBtn = document.getElementById('play-pause-btn');
             const playIcon = document.getElementById('play-icon');
             const bgAudio = document.getElementById('bg-audio');
 
             let isPlaying = false;
-
-            // --- Intro & Audio Start Logic ---
-            startBtn.addEventListener('click', () => {
-                // Fade out intro
-                introScreen.classList.add('fade-out');
-                
-                // Show main content
-                setTimeout(() => {
-                    introScreen.style.display = 'none';
-                    mainContent.classList.add('fade-in');
-                }, 800); // Wait for fade out
-
-                // Slide up player
-                setTimeout(() => {
-                    musicPlayer.classList.remove('translate-y-full');
-                }, 1000);
-
-                // Setup and Play Audio from 23 seconds
-                bgAudio.currentTime = 23;
-                playAudio();
-            });
 
             // --- Audio Controls & UI Updates ---
             function playAudio() {
@@ -244,13 +288,65 @@
 
             // Handle track ending (optional: loop it)
             bgAudio.addEventListener('ended', () => {
-                bgAudio.currentTime = 0; // Or reset to 23s if you want it to loop from that specific point!
-                bgAudio.play();
+                bgAudio.currentTime = 0;
+                bgAudio.play(); // Loop the song
             });
-            
-            // Ensure UI stays synced if audio pauses/plays unexpectedly
-            bgAudio.addEventListener('pause', () => { isPlaying = false; updateIcon(); });
-            bgAudio.addEventListener('play', () => { isPlaying = true; updateIcon(); });
+
+            // --- 0. Generate Intro Particles ---
+            for(let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'dust';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.width = Math.random() * 8 + 3 + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.animationDuration = Math.random() * 5 + 4 + 's';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                introParticles.appendChild(particle);
+            }
+
+            // --- Intro Envelope Logic ---
+            let isOpening = false;
+
+            envelopeWrapper.addEventListener('click', () => {
+                if (isOpening) return;
+                isOpening = true;
+
+                // 1. Break the seal & hide instruction
+                envSeal.classList.add('seal-break');
+                instructionText.style.opacity = '0';
+
+                // 2. Open the top flap
+                setTimeout(() => {
+                    envFlap.classList.add('rotate-x-180');
+                    envFlap.style.zIndex = '15'; // Drop behind the letter as it opens
+                }, 350);
+
+                // 3. Pull out the letter
+                setTimeout(() => {
+                    envLetter.classList.add('letter-pull');
+                    envLetter.style.zIndex = '35'; // Bring above front flaps
+                }, 900);
+
+                // 4. Fade out intro & Start main experience
+                setTimeout(() => {
+                    introScreen.classList.add('fade-out');
+                    
+                    setTimeout(() => {
+                        introScreen.style.display = 'none';
+                        mainContent.classList.add('fade-in');
+                        
+                        // Show Music Player
+                        setTimeout(() => {
+                            musicPlayer.classList.remove('translate-y-full');
+                        }, 500);
+
+                        // Start Music at 0:23
+                        bgAudio.currentTime = 23;
+                        playAudio();
+                    }, 800); // Wait for fade out
+                }, 2800); // Give user time to see the pulled letter
+            });
+
         });
     </script>
 </body>
